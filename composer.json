@@ -1,0 +1,34 @@
+{
+    "name": "sfire-framework/sfire-debugging",
+    "description": "Usefull tools for debugging and logging/displaying errors.",
+    "homepage": "https://sfire.io",
+    "keywords": [
+        "framework",
+        "sfire",
+        "error",
+        "debug",
+        "debugging",
+        "logging"
+    ],
+    "license": "BSD-3-Clause",
+    "authors": [
+        {
+            "name": "Kris Kuiper",
+            "email": "kris@sfire.io"
+        }
+    ],
+    "require": {
+        "php": ">=7.4",
+        "sfire-framework/sfire-entity": "1.0.*",
+        "sfire-framework/sfire-filecontrol": "1.0.*",
+        "sfire-framework/sfire-logging": "1.0.*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^8"
+    },
+    "autoload": {
+        "psr-4": {
+            "sFire\\Debugging\\": "./src/"
+        }
+    }
+}
