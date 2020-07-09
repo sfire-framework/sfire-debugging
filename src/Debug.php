@@ -17,73 +17,73 @@ namespace sFire\Debugging;
  * @package sFire\Debugging
  */
 class Debug {
-	
-
-	/**
-	 * Keep track of the times
-	 * @var array
-	 */
-	private static array $time = [];
 
 
-	/**
-	 * Advanced debugging of variables
-	 * @param mixed $data 
-	 * @param bool $export
-	 * @return mixed
-	 */
-	public static function dump($data = null, bool $export = false) {
-
-		if($data === null || (true === is_string($data) && trim($data) === '') || true === is_bool($data)) {
-
-			if($export) {
-				return var_export($data);
-			}
-
-			echo '<pre>' . var_dump($data) . '</pre>';
-
-			return null;
-		}
-		
-		if($export) {
-			return print_r($data, true);
-		}
-
-		echo '<pre>' . print_r($data, true) . '</pre>';
-		return null;
-	}
+    /**
+     * Keep track of the times
+     * @var array
+     */
+    private static array $time = [];
 
 
-	/**
-	 * Calculate process times by adding new times an exporting them
-	 * @param string $key
-	 * @return array|void
-	 */
-	public static function time(string $key = null): ?array {
+    /**
+     * Advanced debugging of variables
+     * @param mixed $data
+     * @param bool $export
+     * @return mixed
+     */
+    public static function dump($data = null, bool $export = false) {
 
-		if(count(static::$time) === 0) {
-			static::$time = [];
-		}
+        if($data === null || (true === is_string($data) && trim($data) === '') || true === is_bool($data)) {
 
-		if(null !== $key) {
-			
-			static::$time[] = ['time' => microtime(), 'key' => $key];
-			return;
-		}
+            if($export) {
+                return var_export($data);
+            }
 
-		static::$time[] = ['time' => microtime(), 'key' => 'end'];
-		
-		$laps = [];
-		$iterations = count(static::$time);
+            echo '<pre>' . var_dump($data) . '</pre>';
 
-		for($i = 1; $i < $iterations; $i++) {
+            return null;
+        }
 
-			$start 	= explode(' ', static::$time[$i - 1]['time']);
-			$end  	= explode(' ', static::$time[$i]['time']);
+        if($export) {
+            return print_r($data, true);
+        }
 
-			$laps[static::$time[$i - 1]['key'] . ' - ' . static::$time[$i]['key']] = number_format((($end[1] + $end[0]) - ($start[1] + $start[0])), 4, '.', '');
-		}
+        echo '<pre>' . print_r($data, true) . '</pre>';
+        return null;
+    }
 
-		return $laps;
-	}
+
+    /**
+     * Calculate process times by adding new times an exporting them
+     * @param string $key
+     * @return array|void
+     */
+    public static function time(string $key = null): ?array {
+
+        if(count(static::$time) === 0) {
+            static::$time = [];
+        }
+
+        if(null !== $key) {
+
+            static::$time[] = ['time' => microtime(), 'key' => $key];
+            return;
+        }
+
+        static::$time[] = ['time' => microtime(), 'key' => 'end'];
+
+        $laps = [];
+        $iterations = count(static::$time);
+
+        for($i = 1; $i < $iterations; $i++) {
+
+            $start 	= explode(' ', static::$time[$i - 1]['time']);
+            $end  	= explode(' ', static::$time[$i]['time']);
+
+            $laps[static::$time[$i - 1]['key'] . ' - ' . static::$time[$i]['key']] = number_format((($end[1] + $end[0]) - ($start[1] + $start[0])), 4, '.', '');
+        }
+
+        return $laps;
+    }
 }

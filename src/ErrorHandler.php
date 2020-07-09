@@ -24,48 +24,48 @@ use sFire\Debugging\Exception\BadMethodCallException;
 class ErrorHandler {
 
 
-	/**
-	 * Contains an instance of EntityError
-	 * @var EntityError
-	 */
-	private ?EntityError $error;
+    /**
+     * Contains an instance of EntityError
+     * @var EntityError
+     */
+    private ?EntityError $error;
 
 
-	/**
-	 * Contains an instance of Logger
-	 * @var FileAdapter
-	 */
-	private ?FileAdapter $logger = null;
+    /**
+     * Contains an instance of Logger
+     * @var FileAdapter
+     */
+    private ?FileAdapter $logger = null;
 
 
-	/**
-	 * Contains a path to a directory
-	 * @var string
-	 */
-	private ?string $directory = null;
+    /**
+     * Contains a path to a directory
+     * @var string
+     */
+    private ?string $directory = null;
 
 
-	/**
-	 * Contains all the debugging options
-	 * @var array 
-	 */
-	private array $options = [
+    /**
+     * Contains all the debugging options
+     * @var array
+     */
+    private array $options = [
 
-		'write' 	=> true, 
-		'display' 	=> true, 
-		'ip'		=> [],
-		'types' 	=> ['date', 'ip', 'message', 'line', 'number', 'context', 'type', 'backtrace']
-	];
+        'write' 	=> true,
+        'display' 	=> true,
+        'ip'		=> [],
+        'types' 	=> ['date', 'ip', 'message', 'line', 'number', 'context', 'type', 'backtrace']
+    ];
 
 
-	/**
+    /**
      * Constructor
      */
-	public function __construct() {
+    public function __construct() {
 
-		set_error_handler([$this, 'errorHandler']);
-		set_exception_handler([$this, 'exceptionHandler']);
-	}
+        set_error_handler([$this, 'errorHandler']);
+        set_exception_handler([$this, 'exceptionHandler']);
+    }
 
 
     /**
@@ -76,88 +76,88 @@ class ErrorHandler {
      * @param string $line The line of where the error occurred
      * @param array $context An array of every variable that existed in the scope the error was triggered in
      */
-	public function errorHandler($number, string $message, string $file, string $line, array $context): void {
+    public function errorHandler($number, string $message, string $file, string $line, array $context): void {
 
-		if(0 === error_reporting()) {
-			return;
-		}
+        if(0 === error_reporting()) {
+            return;
+        }
 
-		$error = new EntityError();
-		$error -> setFile($file); 
-		$error -> setMessage($message); 
-		$error -> setNumber((string) $number);
-		$error -> setLine((string) $line);
-		$error -> setDate(new DateTime()); 
-		$error -> setContext($context); 
-		$error -> setBacktrace(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 5));
+        $error = new EntityError();
+        $error -> setFile($file);
+        $error -> setMessage($message);
+        $error -> setNumber((string) $number);
+        $error -> setLine((string) $line);
+        $error -> setDate(new DateTime());
+        $error -> setContext($context);
+        $error -> setBacktrace(debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 5));
 
-		if($ip = $this -> getIp()) {
+        if($ip = $this -> getIp()) {
             $error -> setIp($ip);
         }
 
-		switch($error -> getNumber()) {
+        switch($error -> getNumber()) {
 
-			case E_ERROR :
-			case E_CORE_ERROR :
-			case E_COMPILE_ERROR :
-			case E_PARSE :
-			case 8 :
-				$error -> setType('FATAL');
-			break;
-			
-			case E_USER_ERROR :
-			case E_RECOVERABLE_ERROR :
-				$error -> setType('ERROR');
-			break;
-		
-			case E_WARNING :
-			case E_CORE_WARNING :
-			case E_COMPILE_WARNING :
-			case E_USER_WARNING :
-				$error -> setType('WARNING');
-			break;
-		
-			case E_NOTICE :
-			case E_USER_NOTICE :
-				$error -> setType('INFO');
-			break;
-			
-			case E_STRICT :
-				$error -> setType('STRICT');
-			break;
-		}
+            case E_ERROR :
+            case E_CORE_ERROR :
+            case E_COMPILE_ERROR :
+            case E_PARSE :
+            case 8 :
+                $error -> setType('FATAL');
+            break;
 
-		$this -> error = $error;
-		$this -> action();
-	}
+            case E_USER_ERROR :
+            case E_RECOVERABLE_ERROR :
+                $error -> setType('ERROR');
+            break;
+
+            case E_WARNING :
+            case E_CORE_WARNING :
+            case E_COMPILE_WARNING :
+            case E_USER_WARNING :
+                $error -> setType('WARNING');
+            break;
+
+            case E_NOTICE :
+            case E_USER_NOTICE :
+                $error -> setType('INFO');
+            break;
+
+            case E_STRICT :
+                $error -> setType('STRICT');
+            break;
+        }
+
+        $this -> error = $error;
+        $this -> action();
+    }
 
 
     /**
      * Error handler
      * @param mixed $exception
      */
-	public function exceptionHandler($exception): void {
+    public function exceptionHandler($exception): void {
 
-		if(0 === error_reporting()) {
-			return;
-		}
+        if(0 === error_reporting()) {
+            return;
+        }
 
-		$error = new EntityError();
-		$error -> setFile($exception -> getFile()); 
-		$error -> setMessage($exception -> getMessage()); 
-		$error -> setLine((string) $exception -> getLine());
-		$error -> setDate(new DateTime()); 
-		$error -> setBacktrace($exception -> getTrace());
-		$error -> setNumber((string) $exception -> getCode());
+        $error = new EntityError();
+        $error -> setFile($exception -> getFile());
+        $error -> setMessage($exception -> getMessage());
+        $error -> setLine((string) $exception -> getLine());
+        $error -> setDate(new DateTime());
+        $error -> setBacktrace($exception -> getTrace());
+        $error -> setNumber((string) $exception -> getCode());
         $error -> setType('Exception');
 
         if($ip = $this -> getIp()) {
             $error -> setIp($ip);
         }
 
-		$this -> error = $error;
-		$this -> action();
-	}
+        $this -> error = $error;
+        $this -> action();
+    }
 
 
     /**
@@ -166,42 +166,42 @@ class ErrorHandler {
      * @return void
      */
     public function setLogDirectory(string $directory): void {
-	    $this -> directory = $directory;
+        $this -> directory = $directory;
     }
 
 
-	/**
+    /**
      * Set debug options
      * @param array $options
      * @return void
      */
-	public function setOptions(array $options = []): void {
-		$this -> options = array_merge($this -> options, $options);
-	}
+    public function setOptions(array $options = []): void {
+        $this -> options = array_merge($this -> options, $options);
+    }
 
 
     /**
      * Determines what to do with the error
      * @return void
      */
-	private function action(): void {
+    private function action(): void {
 
-		$options = (object) $this -> options;
+        $options = (object) $this -> options;
 
-		//Check if error needs to be logged
-		if(true === $options -> write) {
-			$this -> writeToFile();	
-		}
+        //Check if error needs to be logged
+        if(true === $options -> write) {
+            $this -> writeToFile();
+        }
 
-		//Check if error needs to be displayed in the browser
-		if(true == $options -> display) {
-			
-			$this -> displayError();
-			return;
-		}
+        //Check if error needs to be displayed in the browser
+        if(true == $options -> display) {
 
-		exit();
-	}
+            $this -> displayError();
+            return;
+        }
+
+        exit();
+    }
 
 
     /**
@@ -231,26 +231,26 @@ class ErrorHandler {
     }
 
 
-	/**
-	 * Prints the error to client
-	 * @return void
-	 */
-	private function displayError(): void {
+    /**
+     * Prints the error to client
+     * @return void
+     */
+    private function displayError(): void {
 
-		if(count($this -> options['ip']) === 0 || true === in_array(Request :: getIp(), $this -> options['ip'])) {
+        if(count($this -> options['ip']) === 0 || true === in_array(Request :: getIp(), $this -> options['ip'])) {
 
-			$error = [
+            $error = [
 
-				'type'		=> $this -> error -> getType(),
-				'text' 		=> $this -> error -> getMessage(),
-				'file'		=> $this -> error -> getFile(),
-				'line'		=> $this -> error -> getLine(),
-				'backtrace' => $this -> formatBacktrace()
-			];
+                'type'		=> $this -> error -> getType(),
+                'text' 		=> $this -> error -> getMessage(),
+                'file'		=> $this -> error -> getFile(),
+                'line'		=> $this -> error -> getLine(),
+                'backtrace' => $this -> formatBacktrace()
+            ];
 
-			exit('<pre>' . print_r($error, true) . '</pre>');
-		}
-	}
+            exit('<pre>' . print_r($error, true) . '</pre>');
+        }
+    }
 
 
     /**
@@ -278,25 +278,25 @@ class ErrorHandler {
     }
 
 
-	/**
-	 * Initialise new logger and returns it 
-	 * @return FileAdapter
-	 */
-	private function getLogger(): FileAdapter {
+    /**
+     * Initialise new logger and returns it
+     * @return FileAdapter
+     */
+    private function getLogger(): FileAdapter {
 
-		if(null === $this -> logger) {
-			$this -> logger = new FileAdapter();
-		}
+        if(null === $this -> logger) {
+            $this -> logger = new FileAdapter();
+        }
 
-		return $this -> logger;
-	}
+        return $this -> logger;
+    }
 
 
-	/**
-	 * Returns the request IP address
-	 * @return string|void
-	 */
-	public static function getIp(): ?string {
-		return $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['HTTP-X-FORWARDED-FOR'] ?? $_SERVER['HTTP_VIA'] ?? $_SERVER['REMOTE_ADDR'] ?? null;
-	}
+    /**
+     * Returns the request IP address
+     * @return string|void
+     */
+    public static function getIp(): ?string {
+        return $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['HTTP-X-FORWARDED-FOR'] ?? $_SERVER['HTTP_VIA'] ?? $_SERVER['REMOTE_ADDR'] ?? null;
+    }
 }
